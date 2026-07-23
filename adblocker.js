@@ -106,7 +106,7 @@ async function setupAdblocker(session) {
 /**
  * Wraps the blocker's cosmetic filter injection to catch script execution errors.
  * This prevents unhandled rejections when YouTube's CSP or other factors cause
- * adblocker scriptlets to fail.
+ * adblocker scriptlets to fail. These failures are expected and non-critical.
  */
 function wrapBlocker(blocker) {
   if (!blocker || !blocker.onInjectCosmeticFilters) return blocker;
@@ -126,13 +126,14 @@ function wrapBlocker(blocker) {
                     const result = val.apply(senderTarget, args);
                     if (result && typeof result.catch === 'function') {
                       return result.catch((err) => {
-                        // Silently catch scriptlet/CSS injection failures
-                        console.debug(`Adblocker: ${senderProp} failed (silenced):`, err.message || err);
+                        // Completely silence cosmetic filter injection failures - these are expected
+                        // YouTube's CSP often blocks adblocker scriptlets, which is normal behavior
+                        // No need to log these as they don't affect core adblocking functionality
                       });
                     }
                     return result;
                   } catch (e) {
-                    // Handle immediate throws
+                    // Handle immediate throws silently
                     return Promise.resolve();
                   }
                 };
