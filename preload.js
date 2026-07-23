@@ -1,0 +1,23 @@
+// preload.js
+
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  goBack: () => ipcRenderer.send('toolbar-go-back'),
+  reload: () => ipcRenderer.send('toolbar-reload'),
+  goForward: () => ipcRenderer.send('toolbar-go-forward'),
+  minimizeWindow: () => ipcRenderer.send('minimize-window'),
+  minimizeToTray: () => ipcRenderer.send('minimize-to-tray'),
+  toggleMaximize: () => ipcRenderer.send('toggle-maximize'),
+  closeWindow: () => ipcRenderer.send('close-window'),
+  zoomIn: () => ipcRenderer.send('zoom-in'),
+  zoomOut: () => ipcRenderer.send('zoom-out'),
+  clearData: () => ipcRenderer.send('clear-browsing-data'),
+  onClearDataResult: (callback) => ipcRenderer.on('clear-data-result', callback),
+  getHardwareAcceleration: () => ipcRenderer.invoke('get-hardware-acceleration'),
+  setHardwareAcceleration: (enabled) => ipcRenderer.invoke('set-hardware-acceleration', enabled),
+  toggleHardwareAcceleration: () => ipcRenderer.invoke('toggle-hardware-acceleration'),
+  restartApp: () => ipcRenderer.invoke('restart-app'),
+  getSettings: () => ipcRenderer.invoke('get-settings'),
+  updateSetting: (key, value) => ipcRenderer.invoke('update-setting', key, value),
+});
