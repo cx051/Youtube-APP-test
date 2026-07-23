@@ -4,10 +4,14 @@ const fs = require('fs');
 const path = require('path');
 const { app, ipcMain } = require('electron');
 
-// Aggressive public YouTube adblock filter lists
+// Best-in-class YouTube adblock filter lists
+// Optimized for maximum YouTube ad blocking and hover preview compatibility
 const AD_FILTER_LISTS = [
+  // Core EasyList filters (essential)
   'https://easylist.to/easylist/easylist.txt',
   'https://easylist.to/easylist/easyprivacy.txt',
+  
+  // uBlock Origin filters - most effective for YouTube
   'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt',
   'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt',
   'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt',
@@ -15,8 +19,20 @@ const AD_FILTER_LISTS = [
   'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/annoyances.txt',
   'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/resource-abuse.txt',
   'https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/quick-fixes.txt',
+  
+  // AdGuard YouTube-specific filters (highly effective for YouTube ads)
+  'https://raw.githubusercontent.com/AdguardTeam/AdguardFilters/master/YoutubeFilter/sections/ads.txt',
+  'https://raw.githubusercontent.com/AdguardTeam/AdguardFilters/master/YoutubeFilter/sections/specific.txt',
+  'https://raw.githubusercontent.com/AdguardTeam/AdguardFilters/master/YoutubeFilter/sections/common.txt',
+  
+  // Fanboy's Annoyance List (removes YouTube UI clutter)
+  'https://secure.fanboy.co.nz/fanboy-annoyance.txt',
+  'https://secure.fanboy.co.nz/fanboy-social.txt',
+  
+  // Brave browser filters (additional YouTube coverage)
   'https://raw.githubusercontent.com/brave/adblock-lists/master/brave-unbreak.txt',
   'https://raw.githubusercontent.com/brave/adblock-lists/master/brave-specific.txt',
+  'https://raw.githubusercontent.com/brave/adblock-lists/master/brave-youtube.txt',
 ];
 
 const CACHE_PATH = path.join(app.getPath('userData'), 'adblock-engine.bin');
