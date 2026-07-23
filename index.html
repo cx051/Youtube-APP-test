@@ -496,9 +496,28 @@
       });
 
       // Track successful loads to reset retry flag
+      let isFirstLoad = true;
       webview.addEventListener('did-stop-loading', () => {
         if (webview.getURL().includes('youtube.com')) {
           delete webview.dataset.loadAttempted;
+          
+          // Force reload on first startup only
+          if (isFirstLoad) {
+            isFirstLoad = false;
+            electronAPI.getSettings().then(settings => {
+              if (settings && settings.firstStartup) {
+                console.log('First startup detected, forcing YouTube reload...');
+                setTimeout(() => {
+                  webview.reload();
+                  showToast('Refreshing for optimal experience...', 'neutral');
+                  // Mark first startup as complete after reload
+                  setTimeout(() => {
+                    electronAPI.markFirstStartupComplete();
+                  }, 1000);
+                }, 2000);
+              }
+            });
+          }
         }
       });
 

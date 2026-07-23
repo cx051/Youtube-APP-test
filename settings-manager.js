@@ -8,6 +8,7 @@ const defaultSettings = {
   hardwareAcceleration: false,
   soundEffects: true,
   skipIntro: false,
+  firstStartup: true,
 };
 
 function getSettings() {
