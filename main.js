@@ -41,14 +41,6 @@ let splashWindow;
 const ZOOM_LIMITS = { MIN: -3, MAX: 3 };
 let currentZoomLevel = 0;
 
-// Import adblocker toggle function at module level to avoid circular require issues
-let adblockerToggleFn = null;
-async function initAdblockerToggle() {
-  const { setAdblockerEnabled } = await import('./adblocker.js');
-  adblockerToggleFn = setAdblockerEnabled;
-}
-initAdblockerToggle();
-
 function createTray() {
   if (tray) return;
   const iconPath = process.platform === 'win32'
@@ -264,36 +256,6 @@ ipcMain.handle('toggle-hardware-acceleration', async () => {
   } catch (error) {
     console.error('IPC toggle-hardware-acceleration error:', error);
     return { restartRequired: false, enabled: false };
-  }
-});
-
-// Adblocker toggle IPC
-ipcMain.handle('get-adblocker-enabled', () => {
-  return settingsManager.getSettings().adBlockerEnabled;
-});
-
-ipcMain.handle('set-adblocker-enabled', async (_event, enabled) => {
-  try {
-    const currentSettings = settingsManager.getSettings();
-    if (currentSettings.adBlockerEnabled === enabled) {
-      return { success: true, enabled };
-    }
-    
-    settingsManager.updateSetting('adBlockerEnabled', enabled);
-    
-    // Apply the change immediately if we have a blocker instance
-    if (adblockerToggleFn) {
-      adblockerToggleFn(enabled, session.defaultSession);
-    } else {
-      // Fallback to require if dynamic import hasn't completed
-      const { setAdblockerEnabled } = require('./adblocker');
-      setAdblockerEnabled(enabled, session.defaultSession);
-    }
-    
-    return { success: true, enabled };
-  } catch (error) {
-    console.error('IPC set-adblocker-enabled error:', error);
-    return { success: false, error: error.message };
   }
 });
 

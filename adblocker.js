@@ -3,7 +3,6 @@ const fetch = require('cross-fetch');
 const fs = require('fs');
 const path = require('path');
 const { app, ipcMain } = require('electron');
-const settingsManager = require('./settings-manager');
 
 // Aggressive public YouTube adblock filter lists
 const AD_FILTER_LISTS = [
@@ -25,7 +24,6 @@ const LISTS_HASH_PATH = path.join(app.getPath('userData'), 'adblock-lists-hash.t
 
 // Track the current blocker instance to avoid IPC conflicts
 let currentBlocker = null;
-let isBlockerEnabled = true;
 
 /**
  * Sets up the Ghostery adblocker for the given Electron session.
@@ -86,9 +84,7 @@ async function setupAdblocker(session) {
     }
 
     wrapBlocker(blocker);
-    if (isBlockerEnabled) {
-      blocker.enableBlockingInSession(session);
-    }
+    blocker.enableBlockingInSession(session);
     currentBlocker = blocker;
     console.log('Adblocker successfully enabled with aggressive lists.');
     return blocker;
@@ -156,20 +152,4 @@ function wrapBlocker(blocker) {
   return blocker;
 }
 
-/**
- * Enables or disables the adblocker based on user preference.
- */
-function setAdblockerEnabled(enabled, session) {
-  isBlockerEnabled = enabled;
-  if (!currentBlocker || !session) return;
-  
-  if (enabled) {
-    currentBlocker.enableBlockingInSession(session);
-    console.log('Adblocker: Enabled.');
-  } else {
-    currentBlocker.disableBlockingInSession(session);
-    console.log('Adblocker: Disabled.');
-  }
-}
-
-module.exports = { setupAdblocker, setAdblockerEnabled };
+module.exports = { setupAdblocker };

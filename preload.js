@@ -20,6 +20,4 @@ contextBridge.exposeInMainWorld('electronAPI', {
   restartApp: () => ipcRenderer.invoke('restart-app'),
   getSettings: () => ipcRenderer.invoke('get-settings'),
   updateSetting: (key, value) => ipcRenderer.invoke('update-setting', key, value),
-  getAdblockerEnabled: () => ipcRenderer.invoke('get-adblocker-enabled'),
-  setAdblockerEnabled: (enabled) => ipcRenderer.invoke('set-adblocker-enabled', enabled),
 });
