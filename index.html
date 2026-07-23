@@ -435,7 +435,7 @@
     </div>
   </div>
   <div id="webview-container">
-    <webview id="youtube-view" src="https://www.youtube.com" allowpopups></webview>
+    <webview id="youtube-view" allowpopups></webview>
   </div>
   <audio id="ui-pop-audio" src="assets/audio/ui-pop.ogg" preload="auto"></audio>
   <audio id="notification-audio" src="assets/audio/notification.ogg" preload="auto"></audio>
@@ -447,6 +447,9 @@
       const { electronAPI } = window;
       const webview = document.getElementById('youtube-view');
       const reloadBtn = document.getElementById('reload-btn');
+
+      // Load YouTube URL after DOM is ready to ensure proper initialization
+      webview.src = 'https://www.youtube.com';
 
       function heavyPress(btn) {
         btn.classList.add('heavy-press');
@@ -473,7 +476,16 @@
         // -3 is aborted (e.g. by user), usually safe to ignore
         if (e.errorCode === -3) return;
         console.error('Webview failed to load:', e.errorDescription, e.validatedURL);
-        showToast(`Failed to load: ${e.errorDescription}`, 'error');
+        // Auto-retry on first load failure (common with adblocker race condition)
+        if (!webview.dataset.loadAttempted) {
+          webview.dataset.loadAttempted = 'true';
+          showToast('Retrying load...', 'neutral');
+          setTimeout(() => {
+            webview.src = 'https://www.youtube.com';
+          }, 1500);
+        } else {
+          showToast(`Failed to load: ${e.errorDescription}`, 'error');
+        }
       });
 
       webview.addEventListener('render-process-gone', (e) => {
@@ -481,6 +493,13 @@
         showToast(`Renderer error: ${e.reason}`, 'error');
         // Auto-reload after crash
         setTimeout(() => webview.reload(), 2000);
+      });
+
+      // Track successful loads to reset retry flag
+      webview.addEventListener('did-stop-loading', () => {
+        if (webview.getURL().includes('youtube.com')) {
+          delete webview.dataset.loadAttempted;
+        }
       });
 
 
