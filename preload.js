@@ -20,4 +20,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   restartApp: () => ipcRenderer.invoke('restart-app'),
   getSettings: () => ipcRenderer.invoke('get-settings'),
   updateSetting: (key, value) => ipcRenderer.invoke('update-setting', key, value),
+  markFirstStartupComplete: () => ipcRenderer.invoke('mark-first-startup-complete'),
 });

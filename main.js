@@ -232,6 +232,17 @@ ipcMain.handle('update-setting', (_event, key, value) => {
   }
 });
 
+// IPC handler to mark first startup as complete
+ipcMain.handle('mark-first-startup-complete', () => {
+  try {
+    settingsManager.updateSetting('firstStartup', false);
+    return { success: true };
+  } catch (error) {
+    console.error('IPC mark-first-startup-complete error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Hardware acceleration IPC
 ipcMain.handle('get-hardware-acceleration', () => {
   return settingsManager.getSettings().hardwareAcceleration;
