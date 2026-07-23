@@ -4,17 +4,12 @@ import DropdownMenu from '../components/DropdownMenu.jsx';
 
 function DropdownRoot() {
   const [open, setOpen] = useState(false);
-  const [hwAccelEnabled, setHwAccelEnabled] = useState(false);
-  const [adBlockerEnabled, setAdBlockerEnabled] = useState(true);
+  const [hwAccelEnabled, setHwAccelEnabled] = useState(false); // Disabled by default
 
   useEffect(() => {
     // Query current hardware acceleration state from main process
     if (window.electronAPI && window.electronAPI.getHardwareAcceleration) {
       window.electronAPI.getHardwareAcceleration().then(setHwAccelEnabled);
-    }
-    // Query current adblocker state from main process
-    if (window.electronAPI && window.electronAPI.getAdblockerEnabled) {
-      window.electronAPI.getAdblockerEnabled().then(setAdBlockerEnabled);
     }
   }, [open]);
 
@@ -36,17 +31,6 @@ function DropdownRoot() {
       }
       return;
     }
-    if (id === 'toggle-adblocker') {
-      if (window.electronAPI && window.electronAPI.setAdblockerEnabled) {
-        const newValue = !adBlockerEnabled;
-        window.electronAPI.setAdblockerEnabled(newValue).then(result => {
-          if (result.success) {
-            setAdBlockerEnabled(result.enabled);
-          }
-        });
-      }
-      return;
-    }
     setTimeout(() => {
       const btn = document.getElementById(id);
       if (btn) btn.click();
@@ -61,7 +45,7 @@ function DropdownRoot() {
     return () => menuBtn.removeEventListener('click', toggle);
   }, []);
 
-  return <DropdownMenu open={open} onClose={() => setOpen(false)} onAction={handleAction} hwAccelEnabled={hwAccelEnabled} adBlockerEnabled={adBlockerEnabled} />;
+  return <DropdownMenu open={open} onClose={() => setOpen(false)} onAction={handleAction} hwAccelEnabled={hwAccelEnabled} />;
 }
 
 const dropdownContainer = document.querySelector('.dropdown');

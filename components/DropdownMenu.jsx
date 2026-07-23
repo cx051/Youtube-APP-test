@@ -6,11 +6,10 @@ const menuItems = [
   { icon: '🔍−', label: 'Zoom Out', id: 'zoom-out-btn' },
   { icon: '🗑️', label: 'Clear Data', id: 'clear-data-btn' },
   { icon: '⚡', label: 'Toggle Hardware Acceleration', id: 'toggle-hwaccel' },
-  { icon: '🛡️', label: 'Adblocker', id: 'toggle-adblocker', isToggle: true },
   { icon: '⏩', label: 'Skip Intro', id: 'toggle-skip-intro' },
 ];
 
-export default function DropdownMenu({ open, onClose, onAction, hwAccelEnabled, adBlockerEnabled }) {
+export default function DropdownMenu({ open, onClose, onAction, hwAccelEnabled }) {
   const ref = useRef();
 
   useEffect(() => {
@@ -50,11 +49,7 @@ export default function DropdownMenu({ open, onClose, onAction, hwAccelEnabled, 
           tabIndex={0}
         >
           <span className="menu-icon-react">{item.icon}</span>
-          {item.id === 'toggle-hwaccel' 
-            ? (hwAccelEnabled !== undefined ? (hwAccelEnabled ? 'Disable' : 'Enable') + ' Hardware Acceleration' : item.label)
-            : item.isToggle
-              ? (adBlockerEnabled !== undefined ? (adBlockerEnabled ? 'Disable' : 'Enable') + ' Adblocker' : item.label)
-              : item.label}
+          {item.id === 'toggle-hwaccel' ? (hwAccelEnabled !== undefined ? (hwAccelEnabled ? 'Disable' : 'Enable') + ' Hardware Acceleration' : item.label) : item.label}
         </button>
       ))}
     </div>,
